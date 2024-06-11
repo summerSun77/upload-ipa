@@ -1,0 +1,42 @@
+name: Upload IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      app-store-username:
+        description: '请输入App Store用户名'
+        required: true
+      app-store-password:
+        description: '请输入App Store密码'
+        required: true
+      ipa-url:
+        description: '请输入ipa下载URL'
+        required: true
+        # default: ''
+
+  repository_dispatch:
+    types: [upload-ipa]
+
+env:
+  APP_STORE_USERNAME: ""
+  APP_STORE_PASSWORD: ""
+
+
+jobs:
+  upload-ipa:
+    name: Upload IPA
+    runs-on: macOS-latest
+    steps:
+      - name: Setup Xcode version
+        uses: maxim-lobanov/setup-xcode@v1.6.0
+        with:
+          xcode-version: latest-stable
+        
+      - name: 从远程下载ipa
+        run: |
+          curl -o app.ipa ${{ github.event.inputs.ipa-url }}
+
+      - name: 通过xcrun上传ipa
+        run: |
+          xcrun altool --upload-app --file app.ipa --username ${{ github.event.inputs.app-store-username }} --password ${{ github.event.inputs.app-store-password }} --type ios
+          
