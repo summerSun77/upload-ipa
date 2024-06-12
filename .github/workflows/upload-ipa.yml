@@ -34,7 +34,7 @@ jobs:
         
       - name: 从远程下载ipa
         run: |
-          curl -o app.ipa ${{ github.event.inputs.ipa-url }}
+          curl -o app.ipa -L ${{ github.event.inputs.ipa-url }}
 
       - name: 通过xcrun上传ipa
         run: |
